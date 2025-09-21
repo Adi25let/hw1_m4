@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hw1_m4.R
 import com.example.hw1_m4.data.model.Account
+import com.example.hw1_m4.data.model.AccountState
 import com.example.hw1_m4.databinding.ActivityMainBinding
 import com.example.hw1_m4.databinding.DialogAddAccountBinding
 import com.example.hw1_m4.domain.presenter.AccountContracts
@@ -61,9 +62,45 @@ class MainActivity : AppCompatActivity(), AccountContracts.View {
         }
     }
 
+    private fun showEditDialog(account: Account) {
+        val binding = DialogAddAccountBinding.inflate(LayoutInflater.from(this))
+        with(binding) {
+
+            etName.setText(account.name)
+            etBalance.setText(account.balance.toString())
+            etCurrency.setText(account.currency)
+
+            AlertDialog.Builder(this@MainActivity)
+                .setTitle("Изменить счёт")
+                .setView(binding.root)
+                .setPositiveButton("Изменить") { _, _ ->
+
+                    val updatedAccount = account.copy(
+                        name = etName.text.toString(),
+                        currency = etCurrency.text.toString(),
+                        balance = etBalance.text.toString().toInt()
+                    )
+
+                    presenter.updateFullyAccount(updatedAccount)
+                }
+                .setNegativeButton("Отмена", null)
+                .show()
+        }
+    }
+
     private fun initAdapter() {
         with(binding){
-            adapter = AccountAdapter()
+            adapter = AccountAdapter(
+                onEdit = {
+                    showEditDialog(it)
+                },
+                onDelete = {
+                    presenter.deleteAccount(it)
+                },
+                onSwitchToggle = { id, isChecked ->
+                    presenter.updateStateAccount(id, AccountState(isChecked))
+                }
+            )
             recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
             recyclerView.adapter = adapter
             }
