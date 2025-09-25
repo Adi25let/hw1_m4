@@ -2,37 +2,47 @@ package com.example.hw1_m4.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hw1_m4.R
 import com.example.hw1_m4.data.model.Account
 import com.example.hw1_m4.data.model.AccountState
 import com.example.hw1_m4.databinding.ActivityMainBinding
 import com.example.hw1_m4.databinding.DialogAddAccountBinding
-import com.example.hw1_m4.domain.presenter.AccountContracts
-import com.example.hw1_m4.domain.presenter.AccountPresenter
 import com.example.hw1_m4.ui.adapter.AccountAdapter
+import com.example.hw1_m4.ui.viewmodel.AccountViewModel
 
-class MainActivity : AppCompatActivity(), AccountContracts.View {
+class MainActivity : AppCompatActivity() {
 
     private var _binding : ActivityMainBinding? = null
     private val binding get() = _binding!!
-    private lateinit var presenter: AccountContracts.Presenter
     private lateinit var adapter: AccountAdapter
+    private val viewModel: AccountViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        presenter = AccountPresenter(this)
+
 
         initAdapter()
         initClicks()
+        subscribeToLiveData()
+    }
+
+    private fun subscribeToLiveData(){
+        viewModel.accounts.observe(this) {
+            adapter.submitList(it)
+        }
+        viewModel.successMessage.observe(this) {
+            Toast.makeText(this, "it", Toast.LENGTH_SHORT).show()
+        }
+        viewModel.errorMessage.observe(this){
+            Toast.makeText(this, "it", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun initClicks() {
@@ -55,7 +65,7 @@ class MainActivity : AppCompatActivity(), AccountContracts.View {
                         currency = etCurrency.text.toString(),
                         balance = etBalance.text.toString().toInt()
                     )
-                    presenter.addAccount(account)
+                    viewModel.addAccount(account)
                 }
                 .setNegativeButton("Отмена", null)
                 .show()
@@ -81,7 +91,7 @@ class MainActivity : AppCompatActivity(), AccountContracts.View {
                         balance = etBalance.text.toString().toInt()
                     )
 
-                    presenter.updateFullyAccount(updatedAccount)
+                    viewModel.updateFullyAccount(updatedAccount)
                 }
                 .setNegativeButton("Отмена", null)
                 .show()
@@ -95,10 +105,10 @@ class MainActivity : AppCompatActivity(), AccountContracts.View {
                     showEditDialog(it)
                 },
                 onDelete = {
-                    presenter.deleteAccount(it)
+                    viewModel.deleteAccount(it)
                 },
                 onSwitchToggle = { id, isChecked ->
-                    presenter.updateStateAccount(id, AccountState(isChecked))
+                    viewModel.updateStateAccount(id, AccountState(isChecked))
                 }
             )
             recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
@@ -109,10 +119,6 @@ class MainActivity : AppCompatActivity(), AccountContracts.View {
 
     override fun onResume() {
         super.onResume()
-        presenter.loadAccounts()
-    }
-
-    override fun showAccounts(list: List<Account>) {
-        adapter.submitList(list)
+        viewModel.loadAccounts()
     }
 }
