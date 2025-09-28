@@ -13,7 +13,10 @@ import com.example.hw1_m4.databinding.ActivityMainBinding
 import com.example.hw1_m4.databinding.DialogAddAccountBinding
 import com.example.hw1_m4.ui.adapter.AccountAdapter
 import com.example.hw1_m4.ui.viewmodel.AccountViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private var _binding : ActivityMainBinding? = null
@@ -38,10 +41,10 @@ class MainActivity : AppCompatActivity() {
             adapter.submitList(it)
         }
         viewModel.successMessage.observe(this) {
-            Toast.makeText(this, "it", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         }
         viewModel.errorMessage.observe(this){
-            Toast.makeText(this, "it", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         }
     }
 
