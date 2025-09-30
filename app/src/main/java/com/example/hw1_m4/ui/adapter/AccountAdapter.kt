@@ -8,8 +8,7 @@ import com.example.hw1_m4.data.model.Account
 import com.example.hw1_m4.databinding.ItemAccountBinding
 
 class AccountAdapter(
-    val onEdit: (Account) -> Unit,
-    val onDelete: (String) -> Unit,
+    val onItemClick: (String) -> Unit,
     val onSwitchToggle: (String, Boolean) -> Unit
 ): RecyclerView.Adapter<AccountAdapter.AccountViewHolder>() {
 
@@ -42,11 +41,8 @@ class AccountAdapter(
         fun bind(account: Account) = with(binding) {
             tvName.text = account.name
             tvBalance.text = "${account.balance} ${account.currency}"
-            btnEdit.setOnClickListener {
-                onEdit(account)
-            }
-            btnDelete.setOnClickListener {
-                account.id?.let { onDelete(it) }
+            root.setOnClickListener {
+                account.id?.let { onItemClick(it) }
             }
             switcher.isChecked = account.isActive == true
             switcher.setOnCheckedChangeListener { buttonView, isChecked ->

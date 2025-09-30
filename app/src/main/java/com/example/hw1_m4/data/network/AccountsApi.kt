@@ -35,4 +35,9 @@ interface  AccountsApi {
     fun deleteAccount(
         @Path("id") accountId: String
     ):Call<Unit>
+
+    @GET("accounts/{id}")
+    fun fetchAccountById(
+        @Path("id") accountId: String
+    ): Call<Account>
 }

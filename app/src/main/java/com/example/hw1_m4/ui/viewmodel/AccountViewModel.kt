@@ -45,7 +45,7 @@ class AccountViewModel @Inject constructor(
         accountState: AccountState) {
         accountsApi.updateAccountState(accountId,accountState).handleResponse(
             onSuccess = {
-                _successMessage.value = "Состояние счета изменено!".addHello()
+                _successMessage.value = "Состояние счета изменено!"
                 loadAccounts()
             }
         )

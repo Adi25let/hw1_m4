@@ -1,5 +1,7 @@
 package com.example.hw1_m4.ui
 
+import android.R.attr.id
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -7,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.hw1_m4.AccountDetailActivity
 import com.example.hw1_m4.data.model.Account
 import com.example.hw1_m4.data.model.AccountState
 import com.example.hw1_m4.databinding.ActivityMainBinding
@@ -104,11 +107,11 @@ class MainActivity : AppCompatActivity() {
     private fun initAdapter() {
         with(binding){
             adapter = AccountAdapter(
-                onEdit = {
-                    showEditDialog(it)
-                },
-                onDelete = {
-                    viewModel.deleteAccount(it)
+                onItemClick = {
+                    val intent = Intent(this@MainActivity, AccountDetailActivity::class.java)
+                    intent.putExtra("key", it)
+                    startActivity(intent)
+
                 },
                 onSwitchToggle = { id, isChecked ->
                     viewModel.updateStateAccount(id, AccountState(isChecked))
